@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Websim Explorer — New · Hot · Trending · Users</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css" />
+  <script type="importmap">
+  {
+    "imports": {
+      "dayjs": "https://esm.sh/dayjs@1.11.13",
+      "dayjs/relativeTime": "https://esm.sh/dayjs@1.11.13/plugin/relativeTime"
+    }
+  }
+  </script>
+</head>
+<body>
+  <header class="topbar">
+    <h1 class="brand">Websim Explorer</h1>
+    <nav class="tabs" role="tablist" aria-label="Categories">
+      <button class="tab is-active" data-tab="new" role="tab" aria-selected="true">New</button>
+      <button class="tab" data-tab="hot" role="tab" aria-selected="false">Hot</button>
+      <button class="tab" data-tab="trending" role="tab" aria-selected="false">Trending</button>
+      <button class="tab" data-tab="users" role="tab" aria-selected="false">Users</button>
+    </nav>
+  </header>
+
+  <main class="content">
+    <section id="panel-new" class="panel is-active" role="tabpanel" aria-labelledby="New">
+      <div class="grid" id="grid-new"></div>
+      <div class="status" id="status-new"></div>
+    </section>
+    <section id="panel-hot" class="panel" role="tabpanel" aria-labelledby="Hot">
+      <div class="grid" id="grid-hot"></div>
+      <div class="status" id="status-hot"></div>
+    </section>
+    <section id="panel-trending" class="panel" role="tabpanel" aria-labelledby="Trending">
+      <div class="grid" id="grid-trending"></div>
+      <div class="status" id="status-trending"></div>
+    </section>
+    <section id="panel-users" class="panel" role="tabpanel" aria-labelledby="Users">
+      <div class="grid users" id="grid-users"></div>
+      <div class="status" id="status-users"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span id="project-meta"></span>
+  </footer>
+
+  <script type="module" src="./app.js"></script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"4c6229722a6346bc8eb5cb0e5eae5d41","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>
+
