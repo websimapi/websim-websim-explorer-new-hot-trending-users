@@ -19,39 +19,24 @@
 <body>
   <header class="topbar">
     <h1 class="brand">Websim Explorer</h1>
-    <nav class="tabs" role="tablist" aria-label="Categories">
-      <button class="tab is-active" data-tab="new" role="tab" aria-selected="true">New</button>
-      <button class="tab" data-tab="hot" role="tab" aria-selected="false">Hot</button>
-      <button class="tab" data-tab="trending" role="tab" aria-selected="false">Trending</button>
-      <button class="tab" data-tab="users" role="tab" aria-selected="false">Users</button>
-    </nav>
   </header>
 
   <main class="content">
-    <section id="panel-new" class="panel is-active" role="tabpanel" aria-labelledby="New">
-      <div class="grid" id="grid-new"></div>
-      <div class="status" id="status-new"></div>
-    </section>
-    <section id="panel-hot" class="panel" role="tabpanel" aria-labelledby="Hot">
-      <div class="grid" id="grid-hot"></div>
-      <div class="status" id="status-hot"></div>
-    </section>
-    <section id="panel-trending" class="panel" role="tabpanel" aria-labelledby="Trending">
-      <div class="grid" id="grid-trending"></div>
-      <div class="status" id="status-trending"></div>
-    </section>
-    <section id="panel-users" class="panel" role="tabpanel" aria-labelledby="Users">
-      <div class="grid users" id="grid-users"></div>
-      <div class="status" id="status-users"></div>
-    </section>
+    <section id="user-profile" class="user-profile"></section>
+    <div id="projects-grid" class="grid"></div>
+    <div id="loader" class="loader">Loading…</div>
+
+    <div id="iframe-modal" class="modal hidden" role="dialog" aria-modal="true">
+      <button id="close-iframe" class="modal-close" aria-label="Close">×</button>
+      <iframe id="project-iframe" class="modal-iframe" src="about:blank" title="Project preview"></iframe>
+    </div>
   </main>
 
   <footer class="footer">
     <span id="project-meta"></span>
   </footer>
 
-  <script type="module" src="./app.js"></script>
+  <script type="module" src="./old.js"></script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"4c6229722a6346bc8eb5cb0e5eae5d41","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
-
