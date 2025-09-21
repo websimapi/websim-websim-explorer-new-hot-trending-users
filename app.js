@@ -6,6 +6,7 @@ dayjs.extend(rel);
 const tabs = document.querySelectorAll(".tab");
 const panels = document.querySelectorAll(".panel");
 const metaEl = document.getElementById("project-meta");
+const counts = { new: 0, hot: 0, trending: 0, users: 0 };
 
 tabs.forEach((t) => t.addEventListener("click", () => activateTab(t.dataset.tab)));
 
@@ -79,6 +80,24 @@ function skeletonCards(containerId, count = 8) {
   `).join("");
 }
 
+function setTabCount(name, n) {
+  counts[name] = n;
+  const btn = document.querySelector(`.tab[data-tab="${name}"]`);
+  if (!btn) return;
+  let badge = btn.querySelector(".count");
+  if (!badge) {
+    badge = document.createElement("span");
+    badge.className = "count";
+    btn.appendChild(badge);
+  }
+  badge.textContent = n;
+  updateFooterMeta();
+}
+
+function updateFooterMeta() {
+  metaEl.textContent = `New: ${counts.new} · Hot: ${counts.hot} · Trending: ${counts.trending} · Users: ${counts.users}`;
+}
+
 async function loadAll() {
   try {
     const current = await window.websim.getCurrentProject();
@@ -92,8 +111,10 @@ async function loadAll() {
     const data = await fetchProjects("new");
     renderList("grid-new", data.map(normalizeProject), projectCard);
     setStatus("new", data.length ? "" : "No results");
+    setTabCount("new", data.length);
   } catch (e) {
     setStatus("new", "Failed to load new projects.");
+    setTabCount("new", 0);
   }
 
   // Hot
@@ -103,8 +124,10 @@ async function loadAll() {
     const data = await fetchProjects("hot");
     renderList("grid-hot", data.map(normalizeProject), projectCard);
     setStatus("hot", data.length ? "" : "No results");
+    setTabCount("hot", data.length);
   } catch {
     setStatus("hot", "Failed to load hot projects.");
+    setTabCount("hot", 0);
   }
 
   // Trending
@@ -114,8 +137,10 @@ async function loadAll() {
     const data = await fetchProjects("trending");
     renderList("grid-trending", data.map(normalizeProject), projectCard);
     setStatus("trending", data.length ? "" : "No results");
+    setTabCount("trending", data.length);
   } catch {
     setStatus("trending", "Failed to load trending projects.");
+    setTabCount("trending", 0);
   }
 
   // Users
@@ -125,10 +150,11 @@ async function loadAll() {
     const users = await fetchUsers();
     renderList("grid-users", users.map(normalizeUser), userCard);
     setStatus("users", users.length ? "" : "No results");
+    setTabCount("users", users.length);
   } catch {
     setStatus("users", "Failed to load users.");
+    setTabCount("users", 0);
   }
 }
 
 loadAll();
-
