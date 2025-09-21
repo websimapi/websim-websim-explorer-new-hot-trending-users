@@ -13,45 +13,38 @@ const userProfileContainer = document.getElementById('user-profile');
 const iframeModal = document.getElementById('iframe-modal');
 const projectIframe = document.getElementById('project-iframe');
 const closeIframeBtn = document.getElementById('close-iframe');
-let currentUser = null, nextCursor = null, isLoading = false, hasMore = true;
+let currentUser = null, nextCursor = 0, isLoading = false, hasMore = true;
 
-async function fetchProjects(cursor = null) {
+async function fetchProjects(cursor = 0) {
   if (isLoading || !hasMore) return; isLoading = true; loader.classList.add('visible');
   try {
-    if (!currentUser) {
-      const user = await window.websim.getCreator();
-      if (!user || !user.username) { userProfileContainer.innerHTML = '<h1>Creator not found</h1>'; projectsGrid.innerHTML = '<h2>Could not load creator profile.</h2>'; hasMore = false; loader.style.display = 'none'; return; }
-      currentUser = user; displayUserProfile(currentUser);
-    }
-    let url = `/api/v1/users/${currentUser.username}/projects?posted=true&first=12`; if (cursor) url += `&after=${cursor}`;
-    const data = await fetchApiJson(url); const { projects } = data;
-    if (projects?.data?.length) {
+    const url = `/api/v1/search/top?limit=36&offset=${cursor||0}`;
+    const body = await fetchApiJson(url);
+    const items = body?.results || body?.data || body?.items || [];
+    if (items.length) {
       const frag = document.createDocumentFragment();
-      projects.data.forEach(item => { const el = createProjectCard(item); if (el) frag.appendChild(el); });
-      projectsGrid.appendChild(frag); nextCursor = projects.meta?.end_cursor; hasMore = !!projects.meta?.has_next_page;
+      items.forEach(item => { const el = createProjectCard(item); if (el) frag.appendChild(el); });
+      projectsGrid.appendChild(frag); nextCursor = (cursor||0) + items.length; hasMore = items.length >= 36;
     } else { hasMore = false; }
   } catch (e) {
     console.error('Error fetching projects:', e); projectsGrid.innerHTML += '<p>Failed to load projects. Please try again later.</p>'; hasMore = false;
   } finally { isLoading = false; if (!hasMore) loader.style.display = 'none'; else loader.classList.remove('visible'); }
 }
 
-function displayUserProfile(user) {
-  const u = user?.username || 'Anonymous'; const profileLink = `https://websim.com/@${u}`; const avatarUrl = `https://images.websim.com/avatar/${u}`;
-  userProfileContainer.innerHTML = `<a class="link" href="${profileLink}" target="_blank" rel="noopener" title="View profile on websim.com">
-    <img src="${avatarUrl}" alt="${u}'s profile picture" class="user-avatar" style="width:48px;height:48px;border-radius:50%;vertical-align:middle;margin-right:10px;">
-    <h1 style="display:inline-block;margin:0;vertical-align:middle;">@${u}'s Projects</h1></a>`;
-}
-
-function createProjectCard({ project, project_revision, site }) {
-  if (!project || !project_revision || !site) return null;
-  const card = document.createElement('div'); card.className = 'project-card'; card.dataset.iframeSrc = `https://websim.com${site.link_url}`;
-  const thumbnailUrl = `https://images.websim.com/v1/site/${site.id}/600`;
-  const date = new Date(project.created_at).toLocaleDateString('en-US',{ year:'numeric', month:'short', day:'numeric' });
-  card.innerHTML = `<div class="thumbnail"><img src="${thumbnailUrl}" alt="${project.title || 'Project thumbnail'}" loading="lazy"></div>
-    <div class="card-content"><h3 class="title" title="${project.title || 'Untitled Project'}">${project.title || 'Untitled Project'}</h3>
-    <p class="date">Created: ${date}</p>
-    <div class="stats"><span>👁️ ${(project.stats?.views||0).toLocaleString()}</span>
-    <span>❤️ ${(project.stats?.likes||0).toLocaleString()}</span><span>🤖 ${project_revision.version}</span></div></div>`;
+function createProjectCard(item) {
+  const site = item?.site || item; const project = item?.project || item?.revision?.project || item;
+  const link = site?.link_url ? `https://websim.com${site.link_url}` : (site?.id ? `https://websim.com/c/${site.id}` : null);
+  if (!site?.id || !link) return null;
+  const title = project?.title || site?.title || 'Untitled Project';
+  const thumb = `https://images.websim.com/v1/site/${site.id}/600`;
+  const createdAt = project?.created_at || site?.created_at; const date = createdAt ? new Date(createdAt).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'}) : '';
+  const likes = (project?.stats?.likes ?? item?.stats?.likes ?? 0); const views = (project?.stats?.views ?? item?.stats?.views ?? 0);
+  const ver = item?.project_revision?.version ?? item?.revision?.version;
+  const card = document.createElement('div'); card.className = 'project-card'; card.dataset.iframeSrc = link;
+  card.innerHTML = `<div class="thumbnail"><img src="${thumb}" alt="${title}" loading="lazy"></div>
+    <div class="card-content"><h3 class="title" title="${title}">${title}</h3>
+    <p class="date">${date ? `Created: ${date}` : ''}</p>
+    <div class="stats"><span>👁️ ${Number(views).toLocaleString()}</span><span>❤️ ${Number(likes).toLocaleString()}</span>${ver?`<span>🤖 ${ver}</span>`:''}</div></div>`;
   return card;
 }
 
@@ -68,4 +61,4 @@ closeIframeBtn.addEventListener('click', closeProjectIframe);
 iframeModal.addEventListener('click', (e)=>{ if (e.target === iframeModal) closeProjectIframe(); });
 document.addEventListener('keydown', (e)=>{ if (e.key === 'Escape' && !iframeModal.classList.contains('hidden')) closeProjectIframe(); });
 
-document.addEventListener('DOMContentLoaded', ()=>{ fetchProjects(); setupInfiniteScroll(); });
+document.addEventListener('DOMContentLoaded', ()=>{ fetchProjects(0); setupInfiniteScroll(); });
