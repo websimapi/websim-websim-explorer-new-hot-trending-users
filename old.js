@@ -1,5 +1,3 @@
-
-```javascript
 // Helper to fetch JSON via Websim API
 async function fetchApiJson(url) {
   const res = await window.websim.fetchApi({ url, options: { method: "GET" } });
